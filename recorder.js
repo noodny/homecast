@@ -73,13 +73,15 @@ Recorder.prototype.start = function() {
             // relative loudness in % of loudness scale
             var loudness = Math.round(_.mean(_.map(frameData, Math.abs)) * 10000) / 100;
 
+            var now = Date.now();
+
             self.emit('chunk', {
-                time: Date.now(),
+                time: now,
                 loudness: loudness
             });
 
             if(loudness > 2) {
-                prestartRecording.call(self);
+                prestartRecording.call(self, now);
             }
         };
 
@@ -93,7 +95,7 @@ Recorder.prototype.start = function() {
             renderer.write(chunk);
         });
 
-        function prestartRecording() {
+        function prestartRecording(now) {
             recordTrial++;
             clearTimeout(prerecordingTimeout);
 
@@ -105,13 +107,13 @@ Recorder.prototype.start = function() {
             // actually start recording if there were `recordAfter` recording trials in 1 seconds window
             if(recordTrial === recordAfter) {
                 recordTrial = 0;
-                startRecording.call(this);
+                startRecording.call(this, now);
             }
         }
 
-        function startRecording() {
+        function startRecording(now) {
             if(!recording) {
-                startedAt = Date.now();
+                startedAt = now;
                 filename = startedAt + '.mp3';
                 writeStream = fs.createWriteStream('./samples/' + filename);
                 res.pipe(writeStream);

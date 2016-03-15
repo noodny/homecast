@@ -4,13 +4,15 @@ $(document).ready(function() {
 
     function renderChunks(chunks) {
         chunks.forEach(function(chunk) {
-            $track.append('<div class="chunk" style="height: ' + chunk.loudness * 10 + '%"></div>');
+            $track.append('<div data-time="' + chunk.time + '" class="chunk ' + (chunk.loudness > 2 ? 'loud' : '') + '" style="height: ' + chunk.loudness * 10 + '%"></div>');
         });
         $track.scrollLeft(($track.scrollLeft() + chunks.length));
     }
 
     function renderRecordings(recordings) {
-
+        recordings.forEach(function(recording) {
+            $track.find('[data-time="' + recording.start + '"]').append('<a class="audio"><audio src="/samples/' + recording.file + '"></audio></a>');
+        });
     }
 
     $.when($.get('/chunks'), $.get('/recordings')).done(function(chunks, recordings) {
