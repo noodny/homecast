@@ -1,0 +1,31 @@
+{
+  "name": "homecast",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noodny/homecast.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noodny/homecast/issues"
+  },
+  "homepage": "https://github.com/noodny/homecast#readme",
+  "dependencies": {
+    "audio-render": "^2.0.1",
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "express": "^4.13.4",
+    "icy": "^2.1.0",
+    "lame": "^1.2.3",
+    "lodash": "^4.6.1",
+    "slackbotapi": "^1.3.7",
+    "socket.io": "^1.4.5",
+    "speaker": "^0.2.6"
+  }
+}
