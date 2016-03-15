@@ -79,7 +79,7 @@ Recorder.prototype.start = function() {
             });
 
             if(loudness > 2) {
-                prestartRecording();
+                prestartRecording.call(self);
             }
         };
 
@@ -105,7 +105,7 @@ Recorder.prototype.start = function() {
             // actually start recording if there were `recordAfter` recording trials in 1 seconds window
             if(recordTrial === recordAfter) {
                 recordTrial = 0;
-                startRecording();
+                startRecording.call(this);
             }
         }
 
@@ -121,7 +121,7 @@ Recorder.prototype.start = function() {
             }
 
             clearTimeout(recordingTimeout);
-            recordingTimeout = setTimeout(stopRecording, 2000);
+            recordingTimeout = setTimeout(stopRecording.bind(this), 2000);
         }
 
         function stopRecording() {
