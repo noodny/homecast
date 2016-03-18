@@ -18,6 +18,11 @@ var app = express();
 
 app.use(cors());
 
+app.get('/settings', function(req, res, next) {
+    res.send({
+        threshold: process.env.THRESHOLD
+    });
+});
 app.get('/chunks', function(req, res, next) {
     res.send(chunks);
 });

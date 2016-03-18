@@ -20,6 +20,10 @@ if(!process.env.ICECAST_URI) {
     throw new Error('Missing ICECAST_URI environment variable.');
 }
 
+if(!process.env.THRESHOLD) {
+    throw new Error('Missing THRESHOLD environment variable.');
+}
+
 var url = process.env.ICECAST_URI;
 
 var Recorder = function(outputStream) {
@@ -80,7 +84,7 @@ Recorder.prototype.start = function() {
                 loudness: loudness
             });
 
-            if(loudness > 2) {
+            if(loudness > process.env.THRESHOLD) {
                 prestartRecording.call(self, now);
             }
         };

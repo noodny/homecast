@@ -15,9 +15,16 @@ $(document).ready(function() {
         });
     }
 
-    $.when($.get('/chunks'), $.get('/recordings')).done(function(chunks, recordings) {
+    function setThreshold(threshold) {
+        $('.threshold').css('top', ($('.chunks-wrapper').height() - $('.chunks-wrapper').height() * (threshold / 10)) + 'px')
+    }
+
+    $.when($.get('/settings'), $.get('/chunks'), $.get('/recordings')).done(function(settings, chunks, recordings) {
+        settings = settings[0];
         renderChunks(chunks[0]);
         renderRecordings(recordings[0]);
+
+        setThreshold(settings.threshold);
 
         socket.on('chunk', function(chunk) {
             $track.append('<div class="chunk" data-time="' + chunk.time + '" style="height: ' + chunk.loudness * 10 + '%"></div>');
