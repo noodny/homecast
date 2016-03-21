@@ -12,7 +12,7 @@ var radioStream = new PassThrough();
 
 var Recorder = require('./recorder');
 
-var recorder = new Recorder(radioStream);
+var recorder = new Recorder(/*radioStream*/);
 
 var app = express();
 
@@ -32,6 +32,10 @@ app.get('/recordings', function(req, res, next) {
 // app.get('/stream', function(req, res, next) {
 //     radioStream.pipe(res);
 // });
+
+app.get('/recordings', function(req, res, next) {
+    res.send(recordings);
+});
 
 app.use('/samples', express.static('samples'));
 app.use(express.static('public'));
