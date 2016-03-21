@@ -29,9 +29,9 @@ app.get('/chunks', function(req, res, next) {
 app.get('/recordings', function(req, res, next) {
     res.send(recordings);
 });
-app.get('/stream', function(req, res, next) {
-    radioStream.pipe(res);
-});
+// app.get('/stream', function(req, res, next) {
+//     radioStream.pipe(res);
+// });
 
 app.use('/samples', express.static('samples'));
 app.use(express.static('public'));
@@ -51,7 +51,7 @@ var chunks = [];
 var recordings = [];
 
 recorder.on('chunk', function(chunk) {
-    chunks.push(chunk);
+    // chunks.push(chunk);
     io.emit('chunk', chunk);
 });
 

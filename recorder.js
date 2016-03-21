@@ -137,7 +137,7 @@ Recorder.prototype.start = function() {
                 stop: Date.now(),
                 file: filename
             });
-            slack.sendMsg(channel, 'Skończyłem wyć!');
+            slack.sendMsg(channel, 'Skończyłem wyć!\nhttp://homecast.kjakubik.pl/samples/' + filename);
             res.unpipe(writeStream);
             writeStream.end();
             writeStream = null;
