@@ -82,6 +82,11 @@ Recorder.prototype.start = function() {
 
             // relative loudness in % of loudness scale
             var loudness = Math.round(_.mean(_.map(frameData, Math.abs)) * 10000) / 100;
+
+            if(isNaN(loudness)) {
+                return;
+            }
+
             rmsAvg(loudness);
 
             threshold = parseInt(process.env.THRESHOLD) + rmsAvg();
