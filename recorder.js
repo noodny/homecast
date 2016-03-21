@@ -4,8 +4,10 @@ var Waveform = require('audio-render');
 var fs = require('fs');
 var _ = require('lodash');
 var slackAPI = require('slackbotapi');
+var mean = require('compute-incrmmean');
 
 var util = require('util');
+var threshold;
 var EventEmitter = require('events').EventEmitter;
 
 if(process.env.SLACK_TOKEN && process.env.SLACK_CHANNEL) {
@@ -22,6 +24,8 @@ if(!process.env.ICECAST_URI) {
 
 if(!process.env.THRESHOLD) {
     throw new Error('Missing THRESHOLD environment variable.');
+} else {
+    threshold = parseInt(process.env.THRESHOLD);
 }
 
 var url = process.env.ICECAST_URI;
@@ -36,6 +40,8 @@ var Recorder = function(outputStream) {
 };
 
 util.inherits(Recorder, EventEmitter);
+
+var rmsAvg = mean(30);
 
 Recorder.prototype.start = function() {
     icy.get(url, function(res) {
@@ -76,15 +82,19 @@ Recorder.prototype.start = function() {
 
             // relative loudness in % of loudness scale
             var loudness = Math.round(_.mean(_.map(frameData, Math.abs)) * 10000) / 100;
+            rmsAvg(loudness);
+
+            threshold = parseInt(process.env.THRESHOLD) + rmsAvg();
 
             var now = Date.now();
 
             self.emit('chunk', {
                 time: now,
-                loudness: loudness
+                loudness: loudness,
+                threshold: threshold
             });
 
-            if(loudness > process.env.THRESHOLD) {
+            if(loudness > threshold) {
                 prestartRecording.call(self, now);
             }
         };

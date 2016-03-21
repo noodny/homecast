@@ -28,7 +28,8 @@ $(document).ready(function() {
 
         socket.on('chunk', function(chunk) {
             $track.append('<div class="chunk" data-time="' + chunk.time + '" style="height: ' + chunk.loudness * 10 + '%"></div>');
-            $track.scrollLeft(($track.scrollLeft() + 1));
+            $track.scrollLeft(($track.scrollLeft() + 1))
+            setThreshold(chunk.threshold);
         });
     });
 
