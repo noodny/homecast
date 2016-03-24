@@ -41,7 +41,7 @@ var Recorder = function(outputStream) {
 
 util.inherits(Recorder, EventEmitter);
 
-var rmsAvg = mean(30);
+var rmsAvg = mean(100);
 
 Recorder.prototype.start = function() {
     icy.get(url, function(res) {
@@ -49,7 +49,7 @@ Recorder.prototype.start = function() {
             size: 44100,
             // offset: 0,
             bufferSize: 44100 * 5,
-            framesPerSecond: 4,
+            framesPerSecond: 8,
             minDecibels: -100,
             maxDecibels: 0,
             smoothingTimeConstant: 0.3
@@ -65,6 +65,12 @@ Recorder.prototype.start = function() {
         var prerecordingTimeout;
         var channel = process.env.SLACK_CHANNEL;
         var self = this;
+
+        this.notify = true;
+
+        this.toggleNotify = function() {
+            this.notify = !this.notify;
+        };
 
         renderer.render = function(canvas, data) {
             if(!data) {
@@ -121,7 +127,7 @@ Recorder.prototype.start = function() {
             // reset trials after 1 second
             prerecordingTimeout = setTimeout(function() {
                 recordTrial = 0;
-            }, 1000);
+            }, 500);
 
             // actually start recording if there were `recordAfter` recording trials in 1 seconds window
             if(recordTrial === recordAfter) {
@@ -137,22 +143,24 @@ Recorder.prototype.start = function() {
                 writeStream = fs.createWriteStream('./samples/' + filename);
                 res.pipe(writeStream);
                 this.emit('record:start', startedAt);
-                slack.sendMsg(channel, 'Zacząłem wyć!');
                 recording = true;
             }
 
             clearTimeout(recordingTimeout);
-            recordingTimeout = setTimeout(stopRecording.bind(this), 2000);
+            recordingTimeout = setTimeout(stopRecording.bind(this), 4000);
         }
 
         function stopRecording() {
+            var finishedAt = Date.now();
             recording = false;
             this.emit('record:stop', {
                 start: startedAt,
-                stop: Date.now(),
+                stop: finishedAt,
                 file: filename
             });
-            slack.sendMsg(channel, 'Skończyłem wyć!\nhttp://homecast.kjakubik.pl/samples/' + filename);
+            if(this.notify) {
+                slack.sendMsg(channel, 'Wyłem przez ' + Math.round((finishedAt - startedAt) / 1000) + ' sekund!\nhttp://homecast.kjakubik.pl/samples/' + filename);
+            }
             res.unpipe(writeStream);
             writeStream.end();
             writeStream = null;

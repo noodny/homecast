@@ -37,6 +37,15 @@ app.get('/recordings', function(req, res, next) {
     res.send(recordings);
 });
 
+app.get('/notify', function(req, res, next) {
+    recorder.toggleNotify();
+    if(recorder.notify) {
+        res.send('Notifications turned on');
+    } else {
+        res.send('Notifications turned off');
+    }
+});
+
 app.use('/samples', express.static('samples'));
 app.use(express.static('public'));
 
