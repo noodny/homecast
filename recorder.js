@@ -120,6 +120,14 @@ Recorder.prototype.start = function() {
             renderer.write(chunk);
         });
 
+        res.on('end', function() {
+            throw new Error('icy stream ended');
+        });
+
+        res.on('error', function(error) {
+            throw error;
+        });
+
         function prestartRecording(now) {
             recordTrial++;
             clearTimeout(prerecordingTimeout);
