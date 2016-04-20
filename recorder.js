@@ -7,7 +7,7 @@ var slackAPI = require('slackbotapi');
 var mean = require('compute-incrmmean');
 
 var util = require('util');
-var threshold;
+var threshold, thresholdLatency;
 var EventEmitter = require('events').EventEmitter;
 
 if(process.env.SLACK_TOKEN && process.env.SLACK_CHANNEL) {
@@ -28,6 +28,12 @@ if(!process.env.THRESHOLD) {
     threshold = parseInt(process.env.THRESHOLD);
 }
 
+if(!process.env.THRESHOLD_LATENCY) {
+    throw new Error('Missing THRESHOLD_LATENCY environment variable.');
+} else {
+    thresholdLatency = parseInt(process.env.THRESHOLD_LATENCY);
+}
+
 var url = process.env.ICECAST_URI;
 
 var Recorder = function(outputStream) {
@@ -41,7 +47,8 @@ var Recorder = function(outputStream) {
 
 util.inherits(Recorder, EventEmitter);
 
-var rmsAvg = mean(100);
+var framesPerSecond = 8;
+var rmsAvg = mean(thresholdLatency * framesPerSecond);
 
 Recorder.prototype.start = function() {
     icy.get(url, function(res) {
@@ -49,7 +56,7 @@ Recorder.prototype.start = function() {
             size: 44100,
             // offset: 0,
             bufferSize: 44100 * 5,
-            framesPerSecond: 8,
+            framesPerSecond: framesPerSecond,
             minDecibels: -100,
             maxDecibels: 0,
             smoothingTimeConstant: 0.3
